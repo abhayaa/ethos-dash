@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/base32"
 	b64 "encoding/base64"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
@@ -43,10 +44,16 @@ func thirdHash(data string) string {
 
 	hashedString := base32.StdEncoding.EncodeToString([]byte(data))
 
-	firstHash := hashedString[5:11]
-	secondHash := hashedString[21:27]
-	thirdHash := hashedString[49:55]
-	fourthHash := hashedString[64:70]
+	arr := make([]int, 5)
+
+	for i := range arr {
+		arr[i] = rand.Intn(65)
+	}
+
+	firstHash := hashedString[arr[0] : arr[2]+6]
+	secondHash := hashedString[arr[3] : arr[3]+5]
+	thirdHash := hashedString[arr[1] : arr[1]+6]
+	fourthHash := hashedString[arr[2] : arr[2]+5]
 
 	finalHash := thirdHash + "-" + secondHash + "-" + firstHash + "-" + fourthHash
 
