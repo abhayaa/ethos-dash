@@ -23,9 +23,10 @@ CREATE TABLE users (
 );
 
 CREATE TABLE sigma (
-     sigmaKey varchar(40) NOT NULL UNIQUE,
+     botKey varchar(40) NOT NULL UNIQUE,
      ethosKey varchar(30) NOT NULL UNIQUE,
-     PRIMARY KEY (sigmaKey),
+     PRIMARY KEY (botKey),
      FOREIGN KEY (ethosKey) REFERENCES users(ethosKey)
-
 );
+
+Insert into "order" (customer_id, price) values ((select customer_id from customer where name = 'John'), 12.34);
