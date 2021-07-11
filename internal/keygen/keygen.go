@@ -32,7 +32,6 @@ func firstHash(data []byte) []byte {
 
 func secondHash(data []byte) []byte {
 
-	//hash := b64.StdEncoding.EncodeToString(([]byte(NewSHA256(data))))
 	hash := strings.ReplaceAll(
 		b64.StdEncoding.EncodeToString(([]byte(data))), "+", "-")
 
@@ -51,9 +50,9 @@ func thirdHash(data string) string {
 	}
 
 	firstHash := hashedString[arr[0] : arr[2]+6]
-	secondHash := hashedString[arr[3] : arr[3]+5]
+	secondHash := hashedString[arr[3] : arr[3]+4]
 	thirdHash := hashedString[arr[1] : arr[1]+6]
-	fourthHash := hashedString[arr[2] : arr[2]+5]
+	fourthHash := hashedString[arr[2] : arr[2]+4]
 
 	finalHash := thirdHash + "-" + secondHash + "-" + firstHash + "-" + fourthHash
 
