@@ -6,6 +6,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func UserCreateRoute(route fiber.Router) {
+func UserCreate(route fiber.Router) {
 	route.Post("", controllers.AddNewUser)
+}
+
+func UserUpdate(route fiber.Router) {
+	route.Post("", controllers.UpdateMembership)
+}
+
+func UserUpgrade(route fiber.Router) {
+	route.Post("", controllers.UpgradeSub)
+}
+
+func PartnershipRoutes(route fiber.Router) {
+	route.Post("", controllers.NewPartner)
 }

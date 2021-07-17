@@ -145,7 +145,8 @@ func GetEthosKey(user string) string {
 	return ethosKey
 }
 
-func InsertBot(b BotKey) error {
+//linking a user's key with a bot -> upgrade ethos key
+func UpgradeKey(b BotKey) error {
 	db, err := connectDb()
 	if err != nil {
 		log.Printf("Error %s when getting db connection", err)
@@ -185,6 +186,8 @@ func InsertBot(b BotKey) error {
 
 	return nil
 }
+
+//TODO: downgrade ethos key
 
 func CreateBotTable(bot string) error {
 	db, err := connectDb()

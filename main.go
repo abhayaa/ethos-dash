@@ -35,14 +35,19 @@ func setupRoutes(app *fiber.App) {
 		})
 	})
 
-	api := app.Group("/api")
+	userapi := app.Group("/users")
+	partnerapi := app.Group("/partner")
 
-	api.Get("", func(c *fiber.Ctx) error {
+	userapi.Get("", func(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"success": true,
 			"message": "You are at the api endpoint",
 		})
 	})
 
-	routes.UserCreateRoute(api.Group("/createUser"))
+	routes.UserCreate(userapi.Group("/createUser"))
+	routes.UserUpdate(userapi.Group("/update"))
+	routes.UserUpgrade(userapi.Group("/upgrade"))
+
+	routes.PartnershipRoutes(partnerapi.Group("/newpartner"))
 }
