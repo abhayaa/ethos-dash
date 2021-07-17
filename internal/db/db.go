@@ -7,6 +7,8 @@ import (
 	"log"
 	"time"
 
+	"ethos-dash/internal/utils"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,15 +23,13 @@ type BotKey struct {
 	UserId string
 }
 
-const (
-	username = "root"
-	password = "Asb5535070"
-	hostname = "127.0.0.1:3306"
-	dbname   = "ethos"
-)
+var username string = utils.GetEnvKey("DB_USERNAME")
+var password string = utils.GetEnvKey("DB_PASSWORD")
+var hostname string = utils.GetEnvKey("DB_HOSTNAME")
+var dbname string = utils.GetEnvKey("DB_NAME")
 
 func dsn(dbName string) string {
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbName)
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
 }
 
 func connectDb() (*sql.DB, error) {
@@ -75,6 +75,7 @@ func connectDb() (*sql.DB, error) {
 		return nil, err
 	}
 	log.Printf("Connected to DB %s successfully\n", dbname)
+
 	return db, nil
 }
 
@@ -113,6 +114,7 @@ func InsertUser(u User) error {
 
 	log.Printf("%d rows affected", rows)
 	log.Printf("User %s inserted into table", u.UserId)
+
 	return nil
 }
 
@@ -180,6 +182,7 @@ func InsertBot(b BotKey) error {
 
 	log.Printf("linked new %s key for ethos key : %s", b.Bot, ethosKey)
 	log.Printf("%d rows affected", rows)
+
 	return nil
 }
 
@@ -224,6 +227,7 @@ func CreateBotTable(bot string) error {
 
 	log.Printf("New table created for %s ", bot)
 	log.Printf("%d rows affected, should be 0 most of the time", rows)
+
 	return nil
 }
 
