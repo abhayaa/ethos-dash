@@ -188,6 +188,45 @@ func UpgradeKey(b BotKey) error {
 }
 
 //TODO: downgrade ethos key
+func DowngradeKey(b BotKey) error {
+	db, err := connectDb()
+	if err != nil {
+		log.Printf("Error %s when getting db connection", err)
+		return nil
+	}
+
+	ethosKey := GetEthosKey(b.UserId)
+
+	defer db.Close()
+	log.Printf("Successfully connected to database")
+	query := "DELETE FROM " + b.Bot + " WHERE ethosKey=" + ethosKey
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelfunc()
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Errors %s when preparing SQL statement", err)
+		return err
+	}
+
+	defer stmt.Close()
+	res, err := stmt.ExecContext(ctx)
+	if err != nil {
+		log.Printf("Error %s when deleting from %s table", err, b.Bot)
+		return err
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Error %s when finding rows affected on table %s", err, b.Bot)
+		return err
+	}
+
+	log.Printf("unlinked %s key from ethos key : %s", b.Bot, ethosKey)
+	log.Printf("%d rows affected", rows)
+
+	return nil
+}
 
 func CreateBotTable(bot string) error {
 	db, err := connectDb()
