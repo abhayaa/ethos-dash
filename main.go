@@ -43,4 +43,5 @@ func setupRoutes(app *fiber.App) {
 	routes.UserUpgrade(userapi.Group("/upgrade"))
 	routes.UserDowngrade(userapi.Group("/downgrade"))
 	routes.PartnershipRoutes(partnerapi.Group("/newpartner"))
+	routes.ValidateKey(partnerapi.Group("/auth"))
 }

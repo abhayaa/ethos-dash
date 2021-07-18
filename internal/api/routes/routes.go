@@ -25,3 +25,7 @@ func PartnershipRoutes(route fiber.Router) {
 func UserDowngrade(route fiber.Router) {
 	route.Post("", controllers.DowngradeMembership)
 }
+
+func ValidateKey(route fiber.Router) {
+	route.Get("", controllers.AuthEthos)
+}

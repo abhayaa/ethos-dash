@@ -159,7 +159,7 @@ func UpgradeKey(b BotKey) error {
 	defer db.Close()
 	log.Printf("Successfully connected to database")
 
-	query := "INSERT INTO " + b.Bot + "(botKey, ethosKey) VALUES (?, ?);"
+	query := "INSERT INTO " + b.Bot + "(botKey, ethosKey, expiration) VALUES (?, ?, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 30 DAY));"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 
@@ -200,7 +200,6 @@ func DowngradeKey(b BotKey) error {
 	defer db.Close()
 	log.Printf("Successfully connected to database")
 	query := "DELETE FROM " + b.Bot + " WHERE ethosKey=\"" + ethosKey + "\";"
-	log.Printf(query)
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 
@@ -243,6 +242,7 @@ func CreateBotTable(bot string) error {
 		`(
 			botKey varchar(40) NOT NULL UNIQUE,
 			ethosKey varchar(30) NOT NULL UNIQUE,
+			expiration datetime NOT NULL,
 			PRIMARY KEY (botKey),
 			FOREIGN KEY (ethosKey) REFERENCES users(ethosKey)
 		);`
@@ -313,4 +313,47 @@ func UpdateMembership(userId string) error {
 	log.Printf("Membership updated for %s ", userId)
 
 	return nil
+}
+
+func ValidateKey(key string, bot string) (string, bool) {
+	db, err := connectDb()
+	if err != nil {
+		log.Printf("error %s when getting db connection", err)
+	}
+
+	defer db.Close()
+	log.Printf(("Successfully connected to database"))
+	initialQuery := "SELECT COUNT(ethosKey) FROM " + bot + " WHERE ethosKey=\"" + key + "\";"
+	query := "SELECT ethosKey, expiration FROM " + bot + " WHERE ethosKey=\"" + key + "\";"
+
+	var count int
+	initialRow := db.QueryRow(initialQuery)
+
+	switch err := initialRow.Scan(&count); err {
+	case sql.ErrNoRows:
+		log.Printf("key doesnt exist in table %s", bot)
+	case nil:
+		log.Printf("Successfully retreived ethoskey for %s", bot)
+	default:
+		panic(err)
+	}
+
+	var ethoskey string
+	var expdate string
+	row := db.QueryRow(query)
+
+	switch err := row.Scan(&ethoskey, &expdate); err {
+	case sql.ErrNoRows:
+		log.Printf("key doesnt exist in table %s", bot)
+	case nil:
+		log.Printf("Successfully retreived ethoskey for %s", bot)
+	default:
+		panic(err)
+	}
+
+	if count < 0 {
+		return "", false
+	}
+
+	return expdate, count > 0
 }
