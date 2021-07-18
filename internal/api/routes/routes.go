@@ -21,3 +21,7 @@ func UserUpgrade(route fiber.Router) {
 func PartnershipRoutes(route fiber.Router) {
 	route.Post("", controllers.NewPartner)
 }
+
+func UserDowngrade(route fiber.Router) {
+	route.Post("", controllers.DowngradeMembership)
+}

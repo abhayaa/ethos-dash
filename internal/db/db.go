@@ -132,8 +132,9 @@ func GetEthosKey(user string) string {
 	var ethosKey string
 	var userId string
 	var expiration string
+	var membertype string
 	row := db.QueryRow(query, user)
-	switch err := row.Scan(&ethosKey, &userId, &expiration); err {
+	switch err := row.Scan(&ethosKey, &userId, &expiration, &membertype); err {
 	case sql.ErrNoRows:
 		log.Printf("no rows returned while querying for ethoskey for user %s", user)
 	case nil:
@@ -145,7 +146,7 @@ func GetEthosKey(user string) string {
 	return ethosKey
 }
 
-//linking a user's key with a bot -> upgrade ethos key
+//linking a user's key with a bot key -> upgrade ethos key
 func UpgradeKey(b BotKey) error {
 	db, err := connectDb()
 	if err != nil {
@@ -158,7 +159,7 @@ func UpgradeKey(b BotKey) error {
 	defer db.Close()
 	log.Printf("Successfully connected to database")
 
-	query := "INSERT INTO " + b.Bot + " (botKey, ethosKey) VALUES (?, ?)"
+	query := "INSERT INTO " + b.Bot + "(botKey, ethosKey) VALUES (?, ?);"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 
@@ -187,7 +188,6 @@ func UpgradeKey(b BotKey) error {
 	return nil
 }
 
-//TODO: downgrade ethos key
 func DowngradeKey(b BotKey) error {
 	db, err := connectDb()
 	if err != nil {
@@ -199,7 +199,8 @@ func DowngradeKey(b BotKey) error {
 
 	defer db.Close()
 	log.Printf("Successfully connected to database")
-	query := "DELETE FROM " + b.Bot + " WHERE ethosKey=" + ethosKey
+	query := "DELETE FROM " + b.Bot + " WHERE ethosKey=\"" + ethosKey + "\";"
+	log.Printf(query)
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 

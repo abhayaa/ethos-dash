@@ -12,7 +12,7 @@ func NewPartner(c *fiber.Ctx) error {
 	c.Accepts("json", "text")
 
 	type Request struct {
-		BotName string `json:"BotKey"`
+		BotName string `json:"BotName"`
 		Key     string `json:"key"`
 	}
 
