@@ -2,7 +2,6 @@ package main
 
 import (
 	"ethos-dash/internal/api/routes"
-	"ethos-dash/internal/keygen"
 	_ "ethos-dash/internal/keygen"
 	"log"
 
@@ -46,6 +45,4 @@ func setupRoutes(app *fiber.App) {
 	routes.UserDowngrade(userapi.Group("/downgrade"))
 	routes.PartnershipRoutes(partnerapi.Group("/newpartner"))
 	routes.ValidateKey(partnerapi.Group("/auth"))
-
-	keygen.Keygen(" ")
 }
