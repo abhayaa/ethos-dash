@@ -50,17 +50,15 @@ func thirdHash(data string) string {
 	for i := range arr {
 		arr[i] = rand.Intn(60)
 	}
-	log.Print("arr: ")
-	log.Print(arr)
 
 	firstHash := hashedString[arr[0] : arr[0]+5]
-	log.Print("first " + firstHash)
+
 	secondHash := hashedString[arr[3] : arr[3]+5]
-	log.Print("second " + secondHash)
+
 	thirdHash := hashedString[arr[1] : arr[1]+5]
-	log.Print("third " + thirdHash)
+
 	fourthHash := hashedString[arr[2] : arr[2]+5]
-	log.Print("fourth " + fourthHash)
+
 
 	finalHash := thirdHash + "-" + secondHash + "-" + firstHash + "-" + fourthHash
 
