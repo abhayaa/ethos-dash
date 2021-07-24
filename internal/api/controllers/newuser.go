@@ -15,6 +15,7 @@ func AddNewUser(c *fiber.Ctx) error {
 	type Request struct {
 		UserId string `json:"userId"`
 		Key    string `json:"key"`
+		Email  string `json:"email"`
 	}
 
 	var body Request
@@ -32,12 +33,15 @@ func AddNewUser(c *fiber.Ctx) error {
 		log.Printf("API key does not match")
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"success": false,
+			"apiKey":  utils.GetEnvKey("API_KEY"),
+			"key":     body.Key,
 		})
 	}
 
 	user := db.User{
 		UserId:   body.UserId,
 		EthosKey: keygen.Keygen(body.UserId),
+		Email:    body.Email,
 	}
 
 	error := db.InsertUser(user)

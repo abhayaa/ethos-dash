@@ -2,16 +2,18 @@ package main
 
 import (
 	"ethos-dash/internal/api/routes"
+	"ethos-dash/internal/keygen"
 	_ "ethos-dash/internal/keygen"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
-
 	app := fiber.New()
+	app.Use(cors.New())
 	app.Use(logger.New())
 
 	setupRoutes(app)
@@ -22,7 +24,7 @@ func main() {
 		panic(err)
 	}
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":8000"))
 
 }
 
@@ -44,4 +46,6 @@ func setupRoutes(app *fiber.App) {
 	routes.UserDowngrade(userapi.Group("/downgrade"))
 	routes.PartnershipRoutes(partnerapi.Group("/newpartner"))
 	routes.ValidateKey(partnerapi.Group("/auth"))
+
+	keygen.Keygen(" ")
 }

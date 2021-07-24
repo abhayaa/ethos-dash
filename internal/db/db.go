@@ -15,6 +15,7 @@ import (
 type User struct {
 	UserId   string
 	EthosKey string
+	Email    string
 }
 
 type BotKey struct {
