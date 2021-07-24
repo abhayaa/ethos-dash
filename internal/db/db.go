@@ -358,3 +358,31 @@ func ValidateKey(key string, bot string) (string, bool) {
 
 	return expdate, count > 0
 }
+
+func UserCheck(id string) bool {
+	db, err := connectDb()
+	if err != nil {
+		log.Printf("error %s when getting db connection", err)
+	}
+
+	defer db.Close()
+	log.Printf(("Successfully connected to database"))
+	query := "SELECT COUNT(*) FROM users WHERE userId=\"" + id + "\";"
+	var count int
+	initialRow := db.QueryRow(query)
+
+	switch err := initialRow.Scan(&count); err {
+	case sql.ErrNoRows:
+		log.Print("id doesnt exist in table")
+	case nil:
+		log.Print("Successfully counted user")
+	default:
+		panic(err)
+	}
+
+	if count != 1 {
+		return false
+	}
+
+	return true
+}

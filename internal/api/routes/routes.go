@@ -29,3 +29,7 @@ func UserDowngrade(route fiber.Router) {
 func ValidateKey(route fiber.Router) {
 	route.Get("", controllers.AuthEthos)
 }
+
+func UserCheck(route fiber.Router) {
+	route.Get("", controllers.Authenticate)
+}
