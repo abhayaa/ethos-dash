@@ -13,9 +13,22 @@ import (
 )
 
 type User struct {
-	UserId   string
-	EthosKey string
-	Email    string
+	UserId       string
+	EthosKey     string
+	Email        string
+	AccessToken  string
+	RefreshToken string
+	Username     string
+}
+
+type QUser struct {
+	EthosKey   string
+	UserId     string
+	Expiration string
+	MemberType string
+	Email      string
+	PlanType   string
+	Username   string
 }
 
 type BotKey struct {
@@ -91,7 +104,7 @@ func InsertUser(u User) error {
 	defer db.Close()
 	log.Printf("Successfully connected to the database")
 
-	query := "INSERT INTO users(ethosKey, userId, expiration) VALUES (?, ?, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 30 DAY))"
+	query := "INSERT INTO users(ethosKey, userId, expiration, email, accessToken, refreshToken, username) VALUES (?, ?, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 30 DAY), ?, ?, ?, ?)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 
@@ -101,7 +114,7 @@ func InsertUser(u User) error {
 		return err
 	}
 	defer stmt.Close()
-	res, err := stmt.ExecContext(ctx, u.EthosKey, u.UserId)
+	res, err := stmt.ExecContext(ctx, u.EthosKey, u.UserId, u.Email, u.AccessToken, u.RefreshToken, u.Username)
 	if err != nil {
 		log.Printf("Error %s when inserting row into users table", err)
 		return err
@@ -119,7 +132,8 @@ func InsertUser(u User) error {
 	return nil
 }
 
-func GetEthosKey(user string) string {
+func GetUserById(id string) QUser {
+
 	db, err := connectDb()
 	if err != nil {
 		log.Printf("Error %s when getting db connection", err)
@@ -134,17 +148,39 @@ func GetEthosKey(user string) string {
 	var userId string
 	var expiration string
 	var membertype string
-	row := db.QueryRow(query, user)
-	switch err := row.Scan(&ethosKey, &userId, &expiration, &membertype); err {
+	var email string
+	var accesstoken string
+	var refreshtoken string
+	var planType string
+	var username string
+
+	row := db.QueryRow(query, id)
+	switch err := row.Scan(&ethosKey, &userId, &expiration, &membertype, &email, &accesstoken, &refreshtoken, &planType, &username); err {
 	case sql.ErrNoRows:
-		log.Printf("no rows returned while querying for ethoskey for user %s", user)
+		log.Printf("user query did not return for id %s", id)
 	case nil:
 		log.Printf("Successfully retreived ethoskey for user %s : %s", userId, ethosKey)
 	default:
 		panic(err)
 	}
 
-	return ethosKey
+	var retUser QUser
+	retUser.EthosKey = ethosKey
+	retUser.UserId = userId
+	retUser.Expiration = expiration
+	retUser.MemberType = membertype
+	retUser.Email = email
+	retUser.PlanType = planType
+	retUser.Username = username
+
+	return retUser
+}
+
+func GetEthosKey(userId string) string {
+
+	user := GetUserById(userId)
+
+	return user.EthosKey
 }
 
 //linking a user's key with a bot key -> upgrade ethos key
@@ -352,10 +388,6 @@ func ValidateKey(key string, bot string) (string, bool) {
 		panic(err)
 	}
 
-	if count < 0 {
-		return "", false
-	}
-
 	return expdate, count > 0
 }
 
@@ -367,7 +399,7 @@ func UserCheck(id string) bool {
 
 	defer db.Close()
 	log.Printf(("Successfully connected to database"))
-	query := "SELECT COUNT(*) FROM users WHERE userId=\"" + id + "\";"
+	query := "SELECT COUNT(userId) FROM users WHERE userId=\"" + id + "\";"
 	var count int
 	initialRow := db.QueryRow(query)
 
@@ -380,9 +412,7 @@ func UserCheck(id string) bool {
 		panic(err)
 	}
 
-	if count != 1 {
-		return false
-	}
+	log.Print(count)
 
-	return true
+	return count > 0
 }
