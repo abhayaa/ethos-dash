@@ -28,7 +28,7 @@ func AuthEthos(c *fiber.Ctx) error {
 		})
 	}
 
-	if body.Key != utils.GetEnvKey("PUBLIC_API_KEY") {
+	if !utils.ValidateApiKey(body.Key) {
 		log.Printf("API key does not match")
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"success": false,

@@ -38,12 +38,19 @@ func setupRoutes(app *fiber.App) {
 
 	userapi := app.Group("/users")
 	partnerapi := app.Group("/partner")
+	discordapi := app.Group("/discord")
 
+	// user routes
 	routes.UserCreate(userapi.Group("/createUser"))
 	routes.UserUpdate(userapi.Group("/update"))
 	routes.UserUpgrade(userapi.Group("/upgrade"))
 	routes.UserDowngrade(userapi.Group("/downgrade"))
+	routes.UserCheck(userapi.Group("/usercheck"))
+
+	//partner routes
 	routes.PartnershipRoutes(partnerapi.Group("/newpartner"))
 	routes.ValidateKey(partnerapi.Group("/auth"))
-	routes.UserCheck(userapi.Group("/usercheck"))
+
+	//discord routes
+	routes.DiscordAuth(discordapi.Group("/auth"))
 }

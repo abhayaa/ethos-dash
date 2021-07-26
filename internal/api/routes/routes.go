@@ -31,5 +31,9 @@ func ValidateKey(route fiber.Router) {
 }
 
 func UserCheck(route fiber.Router) {
-	route.Get("", controllers.Authenticate)
+	route.Post("", controllers.Authenticate)
+}
+
+func DiscordAuth(route fiber.Router) {
+	route.Post("", controllers.DiscordAuth)
 }
