@@ -74,7 +74,7 @@ func GetDiscordInfo(code string) *User {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Print("Non 200 response code received")
+		log.Printf("Non 200 response code received %d", resp.StatusCode)
 	}
 
 	bits, err := ioutil.ReadAll(resp.Body)

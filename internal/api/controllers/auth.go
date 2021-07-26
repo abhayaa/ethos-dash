@@ -21,7 +21,6 @@ func DiscordAuth(c *fiber.Ctx) error {
 
 	if err != nil {
 		log.Printf("Error parsing json")
-		log.Print(&body)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "cannot parse JSON",
