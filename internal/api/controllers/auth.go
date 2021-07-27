@@ -51,6 +51,7 @@ func DiscordAuth(c *fiber.Ctx) error {
 			"ethosKey":   q.EthosKey,
 			"plan":       q.PlanType,
 			"memberType": q.MemberType,
+			"userId":     q.UserId,
 		})
 	}
 
