@@ -29,4 +29,21 @@ CREATE TABLE sigma (
      FOREIGN KEY (ethosKey) REFERENCES users(ethosKey)
 );
 
+CREATE TABLE keys (
+     ethosKey varchar(30) NOT NULL UNIQUE,
+     generatedBy varchar(255),
+     PRIMARY KEY (ethosKey)
+);
+
+CREATE TABLE keys (
+     ethosKey varchar(30) NOT NULL UNIQUE,
+     generatedBy varchar(255),
+     PRIMARY KEY (ethosKey)
+);
+
+CREATE TABLE keys (
+    ethosKey varchar(30) NOT NULL UNIQUE,
+    generatedBy varchar(255) NOT NULL
+);
+
 Insert into "order" (customer_id, price) values ((select customer_id from customer where name = 'John'), 12.34);

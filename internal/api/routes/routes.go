@@ -37,3 +37,7 @@ func UserCheck(route fiber.Router) {
 func DiscordAuth(route fiber.Router) {
 	route.Post("", controllers.DiscordAuth)
 }
+
+func GenerateKey(route fiber.Router) {
+	route.Post("", controllers.GenerateKey)
+}

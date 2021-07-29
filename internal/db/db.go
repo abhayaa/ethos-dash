@@ -416,3 +416,40 @@ func UserCheck(id string) bool {
 
 	return count > 0
 }
+
+func AddKey(key string, generatedBy string) bool {
+	db, err := connectDb()
+	if err != nil {
+		log.Printf("error %s when getting db connection", err)
+	}
+
+	defer db.Close()
+	log.Printf(("Successfully connected to database"))
+	query := "INSERT INTO keyGen(genKey, gennedBy) VALUES (?, ?)"
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelfunc()
+
+	stmt, err := db.PrepareContext(ctx, query)
+	if err != nil {
+		log.Printf("Errors %s when preparing SQL statement", err)
+		return false
+	}
+
+	defer stmt.Close()
+	res, err := stmt.ExecContext(ctx, key, generatedBy)
+	if err != nil {
+		log.Printf("Error %s when inserting row into users table", err)
+		return false
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return false
+	}
+
+	log.Printf("%d rows affected", rows)
+	log.Printf("Genned new key and inserted into table %s ", key)
+
+	return true
+}

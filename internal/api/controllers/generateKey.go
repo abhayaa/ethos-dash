@@ -1,20 +1,23 @@
 package controllers
 
 import (
-	"ethos-dash/internal/db"
-	"ethos-dash/internal/utils"
 	"log"
+	"math/rand"
+
+	"ethos-dash/internal/db"
+	"ethos-dash/internal/keygen"
+	"ethos-dash/internal/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func AuthEthos(c *fiber.Ctx) error {
+func GenerateKey(c *fiber.Ctx) error {
+
 	c.Accepts("json", "text")
 
 	type Request struct {
-		BotName string `json:"botName"`
-		Key     string `json:"key"`
-		BotKey  string `json:"botKey"`
+		Key       string `json:"key"`
+		Generator string `json:"generator"`
 	}
 
 	var body Request
@@ -35,18 +38,17 @@ func AuthEthos(c *fiber.Ctx) error {
 		})
 	}
 
-	exp, exist := db.ValidateKey(body.BotKey, body.BotName)
+	key := keygen.Keygen(utils.GenerateRandomString(rand.Intn(100)))
 
-	return c.Status(fiber.StatusAccepted).JSON(fiber.Map{
-		"exists": exist,
-		"exp":    exp,
+	insertKey := db.AddKey(key, body.Generator)
+	if !insertKey {
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"success": false,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"key":     key,
 	})
 }
-
-/**
-{
-    "BotName": "stellar",
-    "Key" : "nplq~VL}W3[3'p2']gpmZF*U=V+^-!",
-    "BotKey": "SLAYWC-RUIV-M5SPNBS-5SPN"
-}
-*/

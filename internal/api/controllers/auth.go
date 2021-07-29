@@ -12,8 +12,9 @@ func DiscordAuth(c *fiber.Ctx) error {
 	c.Accepts("application/json")
 
 	type Request struct {
-		Code string `json:"code"`
-		Key  string `json:"key"`
+		AccessToken  string `json:"accessToken"`
+		RefreshToken string `json:"refreshToken"`
+		Key          string `json:"key"`
 	}
 
 	var body Request
@@ -36,7 +37,7 @@ func DiscordAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	var user *utils.User = utils.GetDiscordInfo(body.Code)
+	var user *utils.User = utils.GetDiscordInfo(body.AccessToken)
 	var found bool = db.UserCheck(user.Id)
 
 	if found {

@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+
 	app := fiber.New()
 	app.Use(cors.New())
 	app.Use(logger.New())
@@ -39,6 +40,7 @@ func setupRoutes(app *fiber.App) {
 	userapi := app.Group("/users")
 	partnerapi := app.Group("/partner")
 	discordapi := app.Group("/discord")
+	adminapi := app.Group("/admin")
 
 	// user routes
 	routes.UserCreate(userapi.Group("/createUser"))
@@ -47,6 +49,8 @@ func setupRoutes(app *fiber.App) {
 	routes.UserDowngrade(userapi.Group("/downgrade"))
 	routes.UserCheck(userapi.Group("/usercheck"))
 
+	// admin routes
+	routes.GenerateKey(adminapi.Group("/generatekey"))
 	//partner routes
 	routes.PartnershipRoutes(partnerapi.Group("/newpartner"))
 	routes.ValidateKey(partnerapi.Group("/auth"))
