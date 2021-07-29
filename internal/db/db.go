@@ -453,3 +453,28 @@ func AddKey(key string, generatedBy string) bool {
 
 	return true
 }
+
+func ValidateKetActivation(key string) bool {
+	db, err := connectDb()
+	if err != nil {
+		log.Printf("error %s when getting db connection", err)
+	}
+
+	defer db.Close()
+	log.Printf(("Successfully connected to database"))
+	initialQuery := "SELECT COUNT(ethosKey) FROM keyGen WHERE genKey=\"" + key + "\";"
+
+	var count int
+	initialRow := db.QueryRow(initialQuery)
+
+	switch err := initialRow.Scan(&count); err {
+	case sql.ErrNoRows:
+		log.Printf("key doesnt exist in genned table")
+	case nil:
+		log.Printf("Key exists, good to activate")
+	default:
+		panic(err)
+	}
+
+	return count > 0
+}
